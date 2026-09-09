@@ -255,16 +255,35 @@ def _get_changeformer_model():
         if d.exists() and str(d) not in sys.path:
             sys.path.insert(0, str(d))
 
+    embed_dim = cfg.get("embed_dim", 256)
     try:
         from ChangeFormer import ChangeFormerV6  # type: ignore
-        model = ChangeFormerV6()
+        try:
+            model = ChangeFormerV6(embed_dim=embed_dim)
+        except TypeError:
+            model = ChangeFormerV6()
     except ImportError as exc:
         raise ImportError(f"ChangeFormer architecture import failed: {exc}")
 
     if ckpt_path.exists():
-        state = torch.load(str(ckpt_path), map_location="cpu")
-        if "model" in state:
-            state = state["model"]
+        try:
+            state = torch.load(str(ckpt_path), map_location="cpu", weights_only=False)
+        except TypeError:
+            state = torch.load(str(ckpt_path), map_location="cpu")
+        if isinstance(state, dict):
+            if "model_G_state_dict" in state:
+                state = state["model_G_state_dict"]
+            elif "model" in state:
+                state = state["model"]
+            elif "state_dict" in state:
+                state = state["state_dict"]
+        # Strip potential 'module.' prefix from DDP checkpoints
+        if isinstance(state, dict):
+            cleaned = {}
+            for k, v in state.items():
+                clean_k = k[7:] if k.startswith("module.") else k
+                cleaned[clean_k] = v
+            state = cleaned
         model.load_state_dict(state, strict=False)
 
     _changeformer_model = model

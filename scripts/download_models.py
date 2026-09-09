@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 SatQuery AI — Model Download Script
 
@@ -189,12 +189,36 @@ def download_sam2_hiera_tiny() -> bool:
 def download_changeformer() -> bool:
     """ChangeFormer LEVIR-CD weights."""
     dest = REPO_ROOT / "models" / "changeformer" / "changeformer_levir.pt"
-    url = "https://github.com/wgcban/ChangeFormer/releases/download/v0.1/best_ckpt.pt"
-    ok = _download_file(url, dest, "ChangeFormer LEVIR-CD")
-    if not ok:
-        print("  NOTE: ChangeFormer weights can be placed at models/changeformer/changeformer_levir.pt.")
-        print("        Image differencing fallback is active until then.")
-    return ok
+    if dest.exists() and dest.stat().st_size > 1000:
+        print(f"  [SKIP] ChangeFormer LEVIR-CD: already exists ({_mb(dest):.1f} MB)")
+        return True
+
+    zip_url = (
+        "https://github.com/wgcban/ChangeFormer/releases/download/v0.1.0/"
+        "CD_ChangeFormerV6_LEVIR_b16_lr0.0001_adamw_train_test_200_linear_ce_multi_train_True_multi_infer_False_shuffle_AB_False_embed_dim_256.zip"
+    )
+    temp_zip = dest.parent / "temp_changeformer.zip"
+    ok = _download_file(zip_url, temp_zip, "ChangeFormer LEVIR-CD Zip")
+    if ok and temp_zip.exists():
+        import zipfile
+        import shutil
+        try:
+            with zipfile.ZipFile(temp_zip, "r") as z:
+                for name in z.namelist():
+                    if name.endswith("best_ckpt.pt"):
+                        with z.open(name) as src, open(dest, "wb") as dst:
+                            shutil.copyfileobj(src, dst)
+                        break
+            if temp_zip.exists():
+                temp_zip.unlink()
+            print(f"  [OK]   ChangeFormer LEVIR-CD: {_mb(dest):.1f} MB -> {dest.relative_to(REPO_ROOT)}")
+            return True
+        except Exception as exc:
+            print(f"  ERROR: Extracting ChangeFormer checkpoint failed: {exc}")
+            if temp_zip.exists():
+                temp_zip.unlink()
+            return False
+    return False
 
 
 def write_metadata(results: dict) -> None:
