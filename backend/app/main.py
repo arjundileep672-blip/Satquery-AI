@@ -61,15 +61,42 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
-@app.get("/", tags=["Root"])
-def root_status():
-    return {
-        "status": "healthy",
-        "service": settings.PROJECT_NAME,
-        "version": settings.VERSION,
-        "docs": "/docs",
-        "health": f"{settings.API_V1_STR}/health",
-    }
+# Serve built frontend if dist exists
+dist_dir = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
+if dist_dir.exists() and (dist_dir / "index.html").exists():
+    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse
+
+    assets_dir = dist_dir / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    dist_data_dir = dist_dir / "data"
+    if dist_data_dir.exists():
+        app.mount("/data", StaticFiles(directory=str(dist_data_dir)), name="static_data")
+
+    @app.get("/", include_in_schema=False)
+    async def serve_root():
+        return FileResponse(dist_dir / "index.html")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        if full_path.startswith("api/") or full_path in ("docs", "redoc", "openapi.json"):
+            return None
+        file_path = dist_dir / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(dist_dir / "index.html")
+else:
+    @app.get("/", tags=["Root"])
+    def root_status():
+        return {
+            "status": "healthy",
+            "service": settings.PROJECT_NAME,
+            "version": settings.VERSION,
+            "docs": "/docs",
+            "health": f"{settings.API_V1_STR}/health",
+        }
 
 
 if __name__ == "__main__":
