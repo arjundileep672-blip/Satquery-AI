@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-09-09T16:32:26Z",
+  "models": {
+    "yolo12n": {
+      "download_success": true,
+      "checkpoint": "models/yolo/yolo12n.pt",
+      "size_mb": 5.35,
+      "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+    },
+    "yolo26n_obb": {
+      "download_success": true,
+      "checkpoint": "models/yolo26_obb/yolo26n-obb.pt",
+      "size_mb": 6.26,
+      "sha256": "fa6e4cd2691f132875c143135affaa66b5d89394ebb1d07d19770a9b6382c1b8"
+    },
+    "spacenet": {
+      "download_success": false,
+      "checkpoint": "models/spacenet/spacenet_rio.pt"
+    },
+    "sam2": {
+      "download_success": true,
+      "checkpoint": "models/sam2/sam2.1_hiera_tiny.pt",
+      "size_mb": 148.78,
+      "sha256": "7402e0d864fa82708a20fbd15bc84245c2f26dff0eb43a4b5b93452deb34be69"
+    },
+    "changeformer": {
+      "download_success": false,
+      "checkpoint": "models/changeformer/changeformer_levir.pt"
+    }
+  }
+}

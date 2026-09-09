@@ -1,0 +1,19 @@
+{
+  "dataset": "SatQuery Demo Benchmark",
+  "location": "Synthetic Urban Scene",
+  "image_dimensions": [
+    640,
+    640
+  ],
+  "channels": 3,
+  "pixel_resolution_m": 0.5,
+  "crs": "EPSG:32643",
+  "bounds": [
+    72.82,
+    18.91,
+    72.85,
+    18.94
+  ],
+  "is_geotiff": true,
+  "description": "Offline test scenes containing buildings, roads, vehicles, and bi-temporal changes."
+}

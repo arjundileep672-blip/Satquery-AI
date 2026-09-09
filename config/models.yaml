@@ -1,0 +1,60 @@
+# SatQuery AI - Model Configuration
+# All checkpoint paths are relative to the repository root.
+# OFFLINE REQUIREMENT: After running scripts/download_models.py,
+# no internet access is required for any inference operation.
+
+models:
+
+  yolo:
+    enabled: true
+    checkpoint: "models/yolo/yolo12n.pt"
+    fallback_checkpoint: "checkpoints/yolo11n.pt"
+    dataset: "COCO"
+    task: "object_detection"
+    device: "auto"
+
+  remote_detector:
+    enabled: true
+    checkpoint: "models/yolo26_obb/yolo26n-obb.pt"
+    fallback_checkpoint: "checkpoints/yolov8n-obb.pt"
+    dataset: "DOTA-v1"
+    task: "oriented_object_detection"
+    device: "auto"
+
+  building_detector:
+    enabled: true
+    checkpoint: "models/spacenet/spacenet_rio.pt"
+    arch_dir: "models/spacenet/unet_arch"
+    dataset: "SpaceNet-Rio"
+    task: "building_footprint_segmentation"
+    device: "auto"
+    fallback: "yolo_sam"
+
+  sam2:
+    enabled: true
+    checkpoint: "models/sam2/sam2.1_hiera_tiny.pt"
+    model_cfg: "sam2.1_hiera_t.yaml"
+    task: "interactive_segmentation"
+    device: "auto"
+
+  changeformer:
+    enabled: true
+    checkpoint: "models/changeformer/changeformer_levir.pt"
+    arch_dir: "models/changeformer/changeformer_arch"
+    dataset: "LEVIR-CD"
+    task: "binary_change_detection"
+    device: "auto"
+    fallback: "image_diff"
+
+  vlm:
+    enabled: true
+    provider: "ollama"
+    model: "moondream"
+    ollama_base_url: "http://localhost:11434"
+    task: "vision_language_reasoning"
+
+device: "auto"
+
+change:
+  object_overlap_threshold: 0.30
+  min_region_area_px: 25

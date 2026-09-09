@@ -1,0 +1,89 @@
+{
+  "disclaimer": "Headline scores use each model's native benchmark. Detection mAP, segmentation J&F/F1, and classification accuracy are not interchangeable.",
+  "models": [
+    {
+      "id": "eurosat_efficientnet_b0",
+      "name": "EuroSAT EfficientNet-B0",
+      "short_name": "EuroSAT B0",
+      "task": "Scene classification",
+      "dataset": "EuroSAT Sentinel-2 (10 class)",
+      "metric": "Top-1 accuracy",
+      "score": 85.2,
+      "secondary_metric": "Top-3 accuracy",
+      "secondary_score": 97.5,
+      "provenance": "SatQuery eval artifact",
+      "local_eval": true,
+      "registry_key": "eurosat"
+    },
+    {
+      "id": "yolo12n",
+      "name": "YOLO12n",
+      "short_name": "YOLO12n",
+      "task": "Horizontal detection",
+      "dataset": "COCO val2017",
+      "metric": "mAP50-95",
+      "score": 40.6,
+      "secondary_metric": "mAP50",
+      "secondary_score": 56.7,
+      "provenance": "Ultralytics published",
+      "local_eval": false,
+      "registry_key": "yolo12n"
+    },
+    {
+      "id": "yolo26n_obb",
+      "name": "YOLO26n-OBB",
+      "short_name": "YOLO26n-OBB",
+      "task": "Oriented detection",
+      "dataset": "DOTA-v1 test",
+      "metric": "mAP50 (e2e)",
+      "score": 78.9,
+      "secondary_metric": "mAP50-95 (e2e)",
+      "secondary_score": 52.4,
+      "provenance": "Ultralytics published",
+      "local_eval": false,
+      "registry_key": "yolo26n_obb"
+    },
+    {
+      "id": "spacenet",
+      "name": "SpaceNet Rio U-Net",
+      "short_name": "SpaceNet Rio",
+      "task": "Building footprints",
+      "dataset": "SpaceNet Rio",
+      "metric": "F1 @ IoU 0.5",
+      "score": 51.8,
+      "secondary_metric": null,
+      "secondary_score": null,
+      "provenance": "Literature (Rio U-Net)",
+      "local_eval": false,
+      "registry_key": "spacenet"
+    },
+    {
+      "id": "sam2",
+      "name": "SAM 2.1 Hiera Tiny",
+      "short_name": "SAM 2.1 Tiny",
+      "task": "Prompted segmentation",
+      "dataset": "SA-V test",
+      "metric": "J&F",
+      "score": 76.5,
+      "secondary_metric": "MOSE val J&F",
+      "secondary_score": 71.8,
+      "provenance": "Meta SAM 2.1 table",
+      "local_eval": false,
+      "registry_key": "sam2"
+    },
+    {
+      "id": "changeformer",
+      "name": "ChangeFormer V6",
+      "short_name": "ChangeFormer V6",
+      "task": "Bi-temporal change",
+      "dataset": "LEVIR-CD test",
+      "metric": "F1",
+      "score": 91.11,
+      "secondary_metric": null,
+      "secondary_score": null,
+      "provenance": "ChangeFormer paper",
+      "local_eval": false,
+      "registry_key": "changeformer"
+    }
+  ]
+}

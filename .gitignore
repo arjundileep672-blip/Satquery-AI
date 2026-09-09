@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+
+# Pytest & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+pytest-cache-files-*/
+
+# Node & Frontend
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Uploads and temporary data
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Large Model Weights & Checkpoints (downloaded via scripts/download_models.py)
+checkpoints/
+runs/
+models/sam2/*.pt
+*.pt
+*.pth
+*.bin
+!backend/models/eurosat/eurosat_classifier.pt
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

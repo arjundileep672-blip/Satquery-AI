@@ -1,0 +1,333 @@
+{
+  "model": "EuroSAT EfficientNet-B0",
+  "architecture": "efficientnet_b0",
+  "dataset": "EuroSAT Sentinel-2 Multi-spectral & RGB",
+  "overall_accuracy": 85.2,
+  "top_3_accuracy": 97.5,
+  "macro_precision": 85.25,
+  "macro_recall": 85.2,
+  "macro_f1": 85.17,
+  "weighted_precision": 85.25,
+  "weighted_recall": 85.2,
+  "weighted_f1": 85.17,
+  "total_samples": 5400,
+  "class_names": [
+    "AnnualCrop",
+    "Forest",
+    "HerbaceousVegetation",
+    "Highway",
+    "Industrial",
+    "Pasture",
+    "PermanentCrop",
+    "Residential",
+    "River",
+    "SeaLake"
+  ],
+  "confusion_matrix": [
+    [
+      451,
+      3,
+      2,
+      1,
+      1,
+      27,
+      47,
+      3,
+      5,
+      0
+    ],
+    [
+      3,
+      489,
+      40,
+      0,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2
+    ],
+    [
+      1,
+      45,
+      436,
+      1,
+      2,
+      45,
+      0,
+      4,
+      4,
+      2
+    ],
+    [
+      5,
+      6,
+      4,
+      431,
+      31,
+      2,
+      1,
+      55,
+      4,
+      1
+    ],
+    [
+      0,
+      2,
+      1,
+      15,
+      486,
+      0,
+      4,
+      29,
+      3,
+      0
+    ],
+    [
+      24,
+      3,
+      24,
+      0,
+      0,
+      485,
+      1,
+      0,
+      1,
+      2
+    ],
+    [
+      72,
+      2,
+      1,
+      4,
+      0,
+      6,
+      450,
+      1,
+      0,
+      4
+    ],
+    [
+      2,
+      2,
+      2,
+      16,
+      33,
+      0,
+      3,
+      479,
+      2,
+      1
+    ],
+    [
+      2,
+      2,
+      3,
+      28,
+      4,
+      2,
+      1,
+      3,
+      431,
+      64
+    ],
+    [
+      3,
+      2,
+      2,
+      2,
+      0,
+      0,
+      0,
+      3,
+      65,
+      463
+    ]
+  ],
+  "normalized_confusion_matrix": [
+    [
+      83.5,
+      0.6,
+      0.4,
+      0.2,
+      0.2,
+      5.0,
+      8.7,
+      0.6,
+      0.9,
+      0.0
+    ],
+    [
+      0.6,
+      90.6,
+      7.4,
+      0.0,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.4,
+      0.4
+    ],
+    [
+      0.2,
+      8.3,
+      80.7,
+      0.2,
+      0.4,
+      8.3,
+      0.0,
+      0.7,
+      0.7,
+      0.4
+    ],
+    [
+      0.9,
+      1.1,
+      0.7,
+      79.8,
+      5.7,
+      0.4,
+      0.2,
+      10.2,
+      0.7,
+      0.2
+    ],
+    [
+      0.0,
+      0.4,
+      0.2,
+      2.8,
+      90.0,
+      0.0,
+      0.7,
+      5.4,
+      0.6,
+      0.0
+    ],
+    [
+      4.4,
+      0.6,
+      4.4,
+      0.0,
+      0.0,
+      89.8,
+      0.2,
+      0.0,
+      0.2,
+      0.4
+    ],
+    [
+      13.3,
+      0.4,
+      0.2,
+      0.7,
+      0.0,
+      1.1,
+      83.3,
+      0.2,
+      0.0,
+      0.7
+    ],
+    [
+      0.4,
+      0.4,
+      0.4,
+      3.0,
+      6.1,
+      0.0,
+      0.6,
+      88.7,
+      0.4,
+      0.2
+    ],
+    [
+      0.4,
+      0.4,
+      0.6,
+      5.2,
+      0.7,
+      0.4,
+      0.2,
+      0.6,
+      79.8,
+      11.9
+    ],
+    [
+      0.6,
+      0.4,
+      0.4,
+      0.4,
+      0.0,
+      0.0,
+      0.0,
+      0.6,
+      12.0,
+      85.7
+    ]
+  ],
+  "per_class_metrics": {
+    "AnnualCrop": {
+      "precision": 80.11,
+      "recall": 83.52,
+      "f1": 81.78,
+      "support": 540
+    },
+    "Forest": {
+      "precision": 87.95,
+      "recall": 90.56,
+      "f1": 89.23,
+      "support": 540
+    },
+    "HerbaceousVegetation": {
+      "precision": 84.66,
+      "recall": 80.74,
+      "f1": 82.65,
+      "support": 540
+    },
+    "Highway": {
+      "precision": 86.55,
+      "recall": 79.81,
+      "f1": 83.04,
+      "support": 540
+    },
+    "Industrial": {
+      "precision": 87.1,
+      "recall": 90.0,
+      "f1": 88.52,
+      "support": 540
+    },
+    "Pasture": {
+      "precision": 85.39,
+      "recall": 89.81,
+      "f1": 87.55,
+      "support": 540
+    },
+    "PermanentCrop": {
+      "precision": 88.58,
+      "recall": 83.33,
+      "f1": 85.88,
+      "support": 540
+    },
+    "Residential": {
+      "precision": 82.87,
+      "recall": 88.7,
+      "f1": 85.69,
+      "support": 540
+    },
+    "River": {
+      "precision": 83.37,
+      "recall": 79.81,
+      "f1": 81.55,
+      "support": 540
+    },
+    "SeaLake": {
+      "precision": 85.9,
+      "recall": 85.74,
+      "f1": 85.82,
+      "support": 540
+    }
+  },
+  "checkpoint_epoch": 3
+}

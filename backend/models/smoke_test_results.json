@@ -1,0 +1,69 @@
+{
+  "run_at": "2026-09-09T21:56:53.455808+00:00",
+  "device": "cpu",
+  "tests": [
+    {
+      "id": "eurosat",
+      "name": "EuroSAT EfficientNet-B0",
+      "passed": true,
+      "latency_ms": 4660.6,
+      "load_status": "ready",
+      "output_summary": "River (0.24)",
+      "error": null
+    },
+    {
+      "id": "yolo12n",
+      "name": "YOLO12n",
+      "passed": true,
+      "latency_ms": 967.0,
+      "load_status": "ready",
+      "output_summary": "0 detections \u00b7 yolo12n",
+      "error": null
+    },
+    {
+      "id": "yolo26n_obb",
+      "name": "YOLO26n-OBB",
+      "passed": true,
+      "latency_ms": 358.0,
+      "load_status": "ready",
+      "output_summary": "0 detections \u00b7 yolo26n-obb",
+      "error": null
+    },
+    {
+      "id": "spacenet",
+      "name": "SpaceNet Rio / buildings",
+      "passed": true,
+      "latency_ms": 1139.7,
+      "load_status": "missing",
+      "output_summary": "1 buildings \u00b7 aerial_delineator+sam2",
+      "error": null
+    },
+    {
+      "id": "sam2",
+      "name": "SAM 2.1 Tiny",
+      "passed": true,
+      "latency_ms": 119.2,
+      "load_status": "ready",
+      "output_summary": "0 masks \u00b7 none",
+      "error": null
+    },
+    {
+      "id": "changeformer",
+      "name": "ChangeFormer V6",
+      "passed": true,
+      "latency_ms": 591.8,
+      "load_status": "missing",
+      "output_summary": "12.80% changed \u00b7 image_diff_otsu",
+      "error": null
+    }
+  ],
+  "pytest": {
+    "exit_code": 0,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "total": 17,
+    "latency_ms": 41927.0,
+    "summary_line": "17 passed in 39.42s"
+  }
+}

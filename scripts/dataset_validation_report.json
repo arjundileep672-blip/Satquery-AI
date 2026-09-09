@@ -1,0 +1,131 @@
+{
+  "dataset_root": "C:\\Users\\Pragna K\\.cache\\kagglehub\\datasets\\apollo2506\\eurosat-dataset\\versions\\6\\EuroSAT",
+  "total_images": 27000,
+  "total_valid": 27000,
+  "total_corrupted": 0,
+  "total_zero_byte": 0,
+  "total_wrong_resolution": 0,
+  "expected_image_size": [
+    64,
+    64
+  ],
+  "classes_found": 10,
+  "missing_classes": [],
+  "class_imbalance_ratio": 1.5,
+  "duplicate_filenames": [],
+  "per_class": [
+    {
+      "class": "AnnualCrop",
+      "dir_exists": true,
+      "total": 3000,
+      "valid": 3000,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "Forest",
+      "dir_exists": true,
+      "total": 3000,
+      "valid": 3000,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "HerbaceousVegetation",
+      "dir_exists": true,
+      "total": 3000,
+      "valid": 3000,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "Highway",
+      "dir_exists": true,
+      "total": 2500,
+      "valid": 2500,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "Industrial",
+      "dir_exists": true,
+      "total": 2500,
+      "valid": 2500,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "Pasture",
+      "dir_exists": true,
+      "total": 2000,
+      "valid": 2000,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "PermanentCrop",
+      "dir_exists": true,
+      "total": 2500,
+      "valid": 2500,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "Residential",
+      "dir_exists": true,
+      "total": 3000,
+      "valid": 3000,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "River",
+      "dir_exists": true,
+      "total": 2500,
+      "valid": 2500,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    },
+    {
+      "class": "SeaLake",
+      "dir_exists": true,
+      "total": 3000,
+      "valid": 3000,
+      "corrupted": [],
+      "zero_byte": [],
+      "wrong_resolution": [],
+      "formats": {},
+      "sample_resolution": null
+    }
+  ],
+  "critical_errors": [],
+  "warnings": [],
+  "validation_passed": true
+}

@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --sq-bg: #070b12;
+  --sq-panel: rgba(12, 18, 28, 0.78);
+  --sq-line: rgba(148, 163, 184, 0.16);
+  --sq-accent: #5eead4;
+  --sq-text: #e8eef6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--sq-bg);
+  color: var(--sq-text);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+.font-mono,
+.sq-mono {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.sq-glass {
+  background: var(--sq-panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--sq-line);
+}
+
+.sq-grid-bg {
+  background-color: #070b12;
+  background-image:
+    linear-gradient(rgba(94, 234, 212, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 234, 212, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.sq-scan {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(94, 234, 212, 0.03) 3px,
+    rgba(94, 234, 212, 0.03) 4px
+  );
+}
+
+@keyframes sq-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.sq-fade {
+  animation: sq-fade 180ms ease-out;
+}
+
+@keyframes sq-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.sq-live {
+  animation: sq-pulse-dot 1.6s ease-in-out infinite;
+}
+
+@keyframes sq-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+.sq-indeterminate {
+  animation: sq-indeterminate 1.4s ease-in-out infinite;
+}
+
+input[type="range"].sq-range {
+  appearance: none;
+  height: 2px;
+  background: rgba(148, 163, 184, 0.25);
+  outline: none;
+}
+
+input[type="range"].sq-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #5eead4;
+  border: 0;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
