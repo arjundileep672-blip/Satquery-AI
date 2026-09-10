@@ -160,14 +160,16 @@ def detect_changes(
 
     if use_cf:
         try:
-            result_mask = _run_changeformer(image1, image2, patch_size)
-            elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
-            return {
-                "change_mask": result_mask,
-                "model": "ChangeFormer",
-                "fallback_used": False,
-                "processing_ms": elapsed_ms,
-            }
+            result_mask = _run_changeformer(image1, image2, patch_size, threshold=threshold)
+            if result_mask.sum() > 0:
+                elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
+                return {
+                    "change_mask": result_mask,
+                    "model": "ChangeFormer",
+                    "fallback_used": False,
+                    "processing_ms": elapsed_ms,
+                }
+            logger.info("ChangeFormer detected 0 changes; verifying with image differencing to highlight visual changes...")
         except Exception as exc:
             logger.warning(f"ChangeFormer inference failed, using fallback: {exc}")
 
@@ -187,6 +189,7 @@ def _run_changeformer(
     img1: np.ndarray,
     img2: np.ndarray,
     patch_size: int,
+    threshold: Optional[float] = None,
 ) -> np.ndarray:
     import torch
 
@@ -216,6 +219,7 @@ def _run_changeformer(
 
     def to_tensor(img_rgb: np.ndarray) -> torch.Tensor:
         t = torch.from_numpy(img_rgb).float() / 255.0
+        t = (t - 0.5) / 0.5
         t = t.permute(2, 0, 1).unsqueeze(0)
         return t.to(device)
 
@@ -230,7 +234,8 @@ def _run_changeformer(
 
         pred_np = pred.squeeze().cpu().numpy()
 
-    binary = (pred_np > 0.5).astype(np.uint8)
+    thr = threshold if threshold is not None else 0.5
+    binary = (pred_np > thr).astype(np.uint8)
     mask_full = cv2.resize(binary, (w, h), interpolation=cv2.INTER_NEAREST)
     return mask_full
 

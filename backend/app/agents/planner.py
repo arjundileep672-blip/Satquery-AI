@@ -209,49 +209,69 @@ class SatQueryPlanner:
             evidence_items.append(ev)
 
         elif operation == "change_detection":
-            tool_output = self.registry.execute(
-                tool_name="change_detection",
-                image_bytes=image_bytes,
-                mime_type=mime_type,
-                query=query,
-                metadata=meta_dict,
-            )
             task_name = "Change Detection"
-            models_used = ["ChangeFormer", "ORB + RANSAC", "SpaceNet 7"]
-            changes = getattr(tool_output, "change_regions", [])
-            masks = getattr(tool_output, "geojson_features", [])
             confidence_val = 0.93
-            chg_m2 = tool_output.evidence.get("total_change_m2", 48200.0) if isinstance(tool_output.evidence, dict) else 48200.0
-            statistics = {
-                "changed_regions": len(changes),
-                "changed_buildings": 7,
-                "buildings_detected": 31,
-                "changed_area_m2": chg_m2,
-                "changed_area_hectares": round(chg_m2 / 10000.0, 2),
-                "changed_percentage": 13.4,
-                "confidence": confidence_val,
-            }
-            visualizations = [
-                {"id": "layer_change_mask", "name": "Change Mask", "type": "change_map", "count": len(changes)},
-                {"id": "layer_changed_buildings", "name": "Changed Buildings", "type": "highlight", "count": 7},
-            ]
-            answer_text = (
-                f"### SatQuery AI Bi-Temporal Change Detection Report\n\n"
-                f"Comparison between baseline (Image 1) and subsequent acquisition (Image 2) identified:\n"
-                f"- **{len(changes)}** significant anthropogenic change regions\n"
-                f"- **Changed Area**: **13.4%** of the monitored AOI ({statistics['changed_area_hectares']} hectares / {int(chg_m2):,} m²)\n"
-                f"- **Changed Buildings / Structures**: **7** of 31 identified infrastructure zones exhibited structural alteration\n"
-                f"- **Dominant Activity**: Port wharf reclamation and new berth vessel arrivals."
-            )
+            if second_image_bytes is not None:
+                import cv2
+                import numpy as np
+                from pipelines.change_detection import run_change_detection
+
+                nparr1 = np.frombuffer(image_bytes, np.uint8)
+                img1 = cv2.imdecode(nparr1, cv2.IMREAD_COLOR)
+                nparr2 = np.frombuffer(second_image_bytes, np.uint8)
+                img2 = cv2.imdecode(nparr2, cv2.IMREAD_COLOR)
+
+                cd_res = run_change_detection(img1, img2)
+                models_used = [cd_res.model, "ORB + RANSAC"]
+                changes = []
+                for r in cd_res.change_regions:
+                    c_dict = r.model_dump() if hasattr(r, "model_dump") else (r.dict() if hasattr(r, "dict") else dict(r))
+                    bb = c_dict.get("bbox") or {}
+                    x1, y1 = float(bb.get("x1", 0)), float(bb.get("y1", 0))
+                    x2, y2 = float(bb.get("x2", 0)), float(bb.get("y2", 0))
+                    if x2 > x1 and y2 > y1:
+                        ring = [[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]
+                        c_dict["geometry_geojson"] = {"type": "Polygon", "coordinates": [ring]}
+                    changes.append(c_dict)
+
+                statistics = {
+                    "changed_regions": len(cd_res.change_regions),
+                    "changed_pixels": cd_res.changed_pixels,
+                    "total_pixels": cd_res.total_pixels,
+                    "change_percentage": cd_res.change_percentage,
+                    "confidence": confidence_val,
+                }
+                visualizations = [
+                    {"id": "layer_change_mask", "name": "Change Mask", "type": "change_map", "count": len(changes)},
+                ]
+                answer_text = (
+                    f"### SatQuery AI Bi-Temporal Change Detection Report\n\n"
+                    f"Comparison between baseline (Image 1) and comparison (Image 2) identified:\n"
+                    f"- **Model**: {cd_res.model} {'(fallback)' if cd_res.fallback_used else ''}\n"
+                    f"- **{len(changes)}** significant change region(s) identified\n"
+                    f"- **Changed Pixels**: {cd_res.changed_pixels:,} px ({cd_res.change_percentage}% of AOI)\n"
+                )
+            else:
+                models_used = ["User Guidance"]
+                changes = []
+                statistics = {"changed_regions": 0, "changed_pixels": 0, "confidence": 1.0}
+                visualizations = []
+                answer_text = (
+                    "### Change Detection Requires Two Images\n\n"
+                    "Bi-temporal change detection requires both a **baseline acquisition (Image 1)** "
+                    "and a **subsequent acquisition (Image 2)** to align and detect differences.\n\n"
+                    "Only one image was uploaded. Please upload a second image in the comparison slot to run change detection."
+                )
+
             ev = Evidence(
                 evidence_id=f"ev_{req_id}_1",
                 source_asset=metadata.filename,
-                observation=f"Detected {len(changes)} change regions totaling {statistics['changed_area_hectares']} ha (13.4% of AOI)",
+                observation=f"Detected {len(changes)} change regions ({statistics.get('changed_pixels', 0)} px changed)",
                 spatial_extent=metadata.bounds if metadata.is_geotiff else None,
                 confidence=confidence_val,
-                model_tool_used="change_detection:ChangeFormer",
-                processing_steps=["Bi-Temporal Image Registration", "ChangeFormer Feature Difference", "Change Mask Delineation"],
-                measurements={"changed_regions": len(changes), "changed_percentage": 13.4, "changed_area_m2": chg_m2},
+                model_tool_used=f"change_detection:{models_used[0]}",
+                processing_steps=["Bi-Temporal Image Registration", "Change Detection", "Vector Polygon Polygonization"],
+                measurements=statistics,
                 geometry=None,
             )
             evidence_items.append(ev)
