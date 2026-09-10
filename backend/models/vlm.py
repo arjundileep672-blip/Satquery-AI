@@ -112,36 +112,40 @@ class VLMBridge:
         if hasattr(self.vlm, "is_service_available") and not self.vlm.is_service_available():
             return results_summary
 
-        if "moondream" in self.vlm.name.lower():
-            # moondream requires direct, natural questions without meta system prompts
-            clean_query = query.strip() if query else "Describe what is visible in this satellite image."
+        try:
+            if "moondream" in self.vlm.name.lower():
+                # moondream requires direct, natural questions without meta system prompts
+                clean_query = query.strip() if query else "Describe what is visible in this satellite image."
+                resp = self.vlm.generate_response(
+                    image_bytes=effective_bytes,
+                    mime_type=mime_type,
+                    prompt=clean_query,
+                    metadata=metadata or {},
+                    system_instruction=None,
+                )
+                vlm_text = (resp.text or "").strip()
+                if results_summary and vlm_text:
+                    return f"{results_summary}\n\n{vlm_text}"
+                return vlm_text or results_summary
+
+            prompt = (
+                f"User query: \"{query}\"\n"
+                f"Task type: {task}\n\n"
+                f"Vision model results:\n{results_summary}\n\n"
+                "Generate a concise, accurate answer to the user's query based solely on the above results."
+            )
+
             resp = self.vlm.generate_response(
                 image_bytes=effective_bytes,
                 mime_type=mime_type,
-                prompt=clean_query,
+                prompt=prompt,
                 metadata=metadata or {},
-                system_instruction=None,
+                system_instruction=_SYNTHESIS_PROMPT,
             )
-            vlm_text = (resp.text or "").strip()
-            if results_summary and vlm_text:
-                return f"{results_summary}\n\n{vlm_text}"
-            return vlm_text or results_summary
-
-        prompt = (
-            f"User query: \"{query}\"\n"
-            f"Task type: {task}\n\n"
-            f"Vision model results:\n{results_summary}\n\n"
-            "Generate a concise, accurate answer to the user's query based solely on the above results."
-        )
-
-        resp = self.vlm.generate_response(
-            image_bytes=effective_bytes,
-            mime_type=mime_type,
-            prompt=prompt,
-            metadata=metadata or {},
-            system_instruction=_SYNTHESIS_PROMPT,
-        )
-        return resp.text or results_summary
+            return resp.text or results_summary
+        except Exception as exc:
+            logger.warning(f"VLM synthesis timed out or failed ({exc}); falling back to structured vision summary.")
+            return results_summary
 
 
 # Module-level singleton

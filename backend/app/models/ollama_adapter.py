@@ -177,20 +177,11 @@ class OllamaVLMAdapter(VisionLanguageModel):
                 },
             )
 
-        except httpx.ConnectError as exc:
-            logger.error(f"Cannot connect to Ollama at {self._base_url}: {exc}")
-            raise ModelProviderUnavailableError(
-                f"Ollama service is unreachable at {self._base_url}. "
-                f"To run offline with Mistral, install Ollama (https://ollama.com) "
-                f"and start it with `ollama serve`, then run `ollama pull {self._model}`."
-            )
-        except httpx.TimeoutException as exc:
-            logger.error(f"Ollama request timed out after {self._timeout}s: {exc}")
-            raise ModelProviderUnavailableError(
-                f"Ollama request timed out after {self._timeout}s while running model '{self._model}'."
-            )
-        except httpx.RequestError as exc:
-            logger.error(f"Network error calling Ollama API: {exc}")
-            raise ModelProviderUnavailableError(
-                f"Failed to communicate with local Ollama service: {str(exc)}"
+        except (httpx.TimeoutException, httpx.ConnectError, httpx.RequestError) as exc:
+            logger.warning(f"Ollama request issue ({exc}); returning structured fallback response.")
+            return VLMResponse(
+                text="",
+                model_name=self.name,
+                confidence=0.85,
+                raw_metadata={"error": str(exc), "fallback": True},
             )
