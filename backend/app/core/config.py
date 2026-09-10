@@ -68,14 +68,23 @@ class Settings(BaseModel):
     ]
 
     # File upload limits
-    MAX_FILE_SIZE_BYTES: int = 25 * 1024 * 1024  # 25 MB
-    ALLOWED_EXTENSIONS: List[str] = [".png", ".jpg", ".jpeg", ".tif", ".tiff"]
+    MAX_FILE_SIZE_BYTES: int = 50 * 1024 * 1024  # 50 MB
+    ALLOWED_EXTENSIONS: List[str] = [
+        ".png", ".jpg", ".jpeg", ".tif", ".tiff", ".webp", ".bmp", ".heic", ".heif"
+    ]
     ALLOWED_MIME_TYPES: List[str] = [
         "image/png",
         "image/jpeg",
+        "image/jpg",
+        "image/pjpeg",
         "image/tiff",
         "image/x-tiff",
         "image/geotiff",
+        "image/webp",
+        "image/bmp",
+        "image/x-ms-bmp",
+        "image/heic",
+        "image/heif",
         "application/octet-stream",
     ]
 

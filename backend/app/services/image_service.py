@@ -101,18 +101,23 @@ def extract_geotiff_metadata(file_bytes: bytes, filename: str) -> Optional[Image
 def extract_standard_image_metadata(file_bytes: bytes, filename: str) -> ImageMetadata:
     """
     Extract standard raster metadata using Pillow.
-    Validates that the file is indeed a decodable image.
+    Validates that the file is indeed a decodable image and handles mobile EXIF rotation.
     """
     try:
+        from PIL import ImageOps
         with Image.open(io.BytesIO(file_bytes)) as img:
             img.verify()  # Fast structural verification
-            
+
         # Re-open for properties since verify() alters file pointer
         with Image.open(io.BytesIO(file_bytes)) as img:
+            try:
+                img = ImageOps.exif_transpose(img)
+            except Exception:
+                pass
             width, height = img.size
             fmt = img.format or Path(filename).suffix.replace(".", "").upper()
             channels = len(img.getbands()) if hasattr(img, "getbands") else 3
-            
+
             return ImageMetadata(
                 filename=filename,
                 format=fmt,
@@ -143,10 +148,11 @@ def extract_metadata(file_bytes: bytes, filename: str) -> ImageMetadata:
 
 def generate_web_preview(file_bytes: bytes, filename: str, max_dimension: int = 1200) -> Tuple[bytes, str]:
     """
-    Produces a web-safe JPEG preview for uploaded images (essential for multi-band or 16-bit GeoTIFFs).
+    Produces a web-safe JPEG preview for uploaded images (essential for multi-band or 16-bit GeoTIFFs,
+    as well as mobile formats).
     """
     ext = Path(filename).suffix.lower()
-    
+
     # Try reading with rasterio if TIFF
     if ext in (".tif", ".tiff"):
         try:
@@ -159,7 +165,7 @@ def generate_web_preview(file_bytes: bytes, filename: str, max_dimension: int = 
                     else:
                         b1 = src.read(1)
                         bands = [b1, b1, b1]
-                    
+
                     # Normalize to 8-bit using 2nd and 98th percentiles
                     def norm8(arr: np.ndarray) -> np.ndarray:
                         p2, p98 = np.percentile(arr, (2, 98))
@@ -167,10 +173,10 @@ def generate_web_preview(file_bytes: bytes, filename: str, max_dimension: int = 
                             return np.zeros_like(arr, dtype=np.uint8)
                         scaled = (arr - p2) / (p98 - p2) * 255.0
                         return np.clip(scaled, 0, 255).astype(np.uint8)
-                    
+
                     rgb = np.stack([norm8(b) for b in bands], axis=-1)
                     pil_img = Image.fromarray(rgb)
-                    
+
                     # Resize if needed
                     pil_img.thumbnail((max_dimension, max_dimension))
                     buf = io.BytesIO()
@@ -179,9 +185,14 @@ def generate_web_preview(file_bytes: bytes, filename: str, max_dimension: int = 
         except Exception:
             pass
 
-    # Fallback to standard Pillow conversion
+    # Fallback to standard Pillow conversion with EXIF orientation support
     try:
+        from PIL import ImageOps
         with Image.open(io.BytesIO(file_bytes)) as img:
+            try:
+                img = ImageOps.exif_transpose(img)
+            except Exception:
+                pass
             rgb_img = img.convert("RGB")
             rgb_img.thumbnail((max_dimension, max_dimension))
             buf = io.BytesIO()
@@ -196,25 +207,22 @@ def prepare_image_for_vlm(file_bytes: bytes, filename: str, mime_type: str) -> T
     """
     Produces VLM-safe image bytes from the uploaded raster file.
 
-    For GeoTIFF/TIFF inputs: generates an 8-bit RGB JPEG visualization via
-    percentile-normalized band compositing (reuses generate_web_preview).
-    This is a *visual interpretation proxy only* — the original scientific raster
-    (raw DN values, 16-bit data, CRS, radiometric calibration) is NOT modified.
-
-    For PNG/JPEG inputs: returns (file_bytes, mime_type) unchanged.
+    For GeoTIFF/TIFF/WebP/BMP inputs: generates an 8-bit RGB JPEG visualization
+    percentile-normalized or thumbnail-safe.
+    For standard PNG/JPEG inputs: returns (file_bytes, mime_type) unchanged.
 
     Returns:
         Tuple[bytes, str]: (vlm_image_bytes, vlm_mime_type)
     """
     ext = Path(filename).suffix.lower()
-    if ext in (".tif", ".tiff"):
+    if ext in (".tif", ".tiff", ".bmp", ".webp", ".heic", ".heif"):
         jpeg_bytes, jpeg_mime = generate_web_preview(file_bytes, filename)
         logger.debug(
-            f"GeoTIFF '{filename}' converted to JPEG visualization for VLM inference "
-            f"({len(jpeg_bytes)} bytes). Original raster untouched."
+            f"Image '{filename}' converted to web-safe JPEG for VLM inference "
+            f"({len(jpeg_bytes)} bytes)."
         )
         return jpeg_bytes, jpeg_mime
 
-    # PNG and JPEG are natively supported by Gemini Vision — pass through unchanged
+    # PNG and JPEG pass through
     return file_bytes, mime_type
 

@@ -66,6 +66,15 @@ async function parseErrorResponse(res: Response, fallbackMessage: string): Promi
   } catch {
     // Response was not JSON
   }
+  if (res.status === 503) {
+    return 'Cloud AI service is starting up or temporarily busy. Please retry in 10 seconds.';
+  }
+  if (res.status === 502 || res.status === 504) {
+    return 'Server instance is waking up from sleep (cold start). Please wait a moment and try again.';
+  }
+  if (res.status === 413) {
+    return 'Uploaded file exceeds the maximum allowed limit (50 MB).';
+  }
   return `${fallbackMessage} (Status: ${res.status})`;
 }
 

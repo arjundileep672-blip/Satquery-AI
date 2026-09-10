@@ -127,14 +127,14 @@ const ImageSlot: React.FC<ImageSlotProps> = ({
           <p className="text-xs text-slate-300 font-medium">
             Drag & drop or <span className="text-emerald-400 underline">browse</span>
           </p>
-          <p className="text-[10px] text-slate-500 mt-1">PNG · JPG · JPEG · TIFF · GeoTIFF</p>
+          <p className="text-[10px] text-slate-500 mt-1">PNG · JPG · JPEG · WebP · TIFF · GeoTIFF</p>
         </div>
       )}
 
       <input
         ref={fileInputRef}
         type="file"
-        accept=".png,.jpg,.jpeg,.tif,.tiff"
+        accept="image/*,.png,.jpg,.jpeg,.tif,.tiff,.webp"
         onChange={handleFileChange}
         disabled={isLoading}
         className="hidden"
