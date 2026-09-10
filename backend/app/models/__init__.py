@@ -36,11 +36,9 @@ def get_vlm_adapter(provider_override: Optional[str] = None) -> VisionLanguageMo
     Returns the configured Vision-Language / Language Model adapter.
     """
     provider = (provider_override or settings.LLM_PROVIDER or "auto").lower()
-    vlm_cfg = load_models_config().get("vlm", {})
-    cfg_provider = vlm_cfg.get("provider", "").lower()
 
-    # 1. Explicit Ollama request or configured default
-    if provider == "ollama" or (provider == "auto" and cfg_provider == "ollama" and not settings.DEMO_MODE):
+    # 1. Explicit Ollama or Auto: check if Ollama is actively reachable
+    if provider in ("ollama", "auto"):
         probe_ollama = OllamaVLMAdapter(
             base_url=settings.OLLAMA_BASE_URL,
             model=settings.OLLAMA_MODEL,
@@ -48,44 +46,23 @@ def get_vlm_adapter(provider_override: Optional[str] = None) -> VisionLanguageMo
         )
         if probe_ollama.is_service_available():
             return probe_ollama
-        # On cloud hosts (e.g. Render), local Ollama is not running.
-        # Fall back to Gemini if configured, or Mock adapter so the API never crashes with 503.
-        if settings.GEMINI_API_KEY:
-            return GeminiVLMAdapter()
-        return MockVLMAdapter()
-
-    # 2. Explicit Mock request
-    if provider == "mock":
-        return MockVLMAdapter()
-
-    # 3. Explicit Gemini request
-    if provider == "gemini":
-        if not settings.GEMINI_API_KEY:
-            raise ModelProviderUnavailableError(
-                "GEMINI_API_KEY is not configured for Gemini provider. "
-                "Set GEMINI_API_KEY in environment or switch to offline Ollama with LLM_PROVIDER=ollama.",
-                status_code=503,
+        if provider == "ollama":
+            logger.warning(
+                f"Ollama requested but unreachable at {settings.OLLAMA_BASE_URL}. "
+                "Checking Gemini or fallback."
             )
+
+    # 2. Explicit Gemini or Auto with API key
+    if provider in ("gemini", "auto") and settings.GEMINI_API_KEY:
         return GeminiVLMAdapter()
+    if provider == "gemini" and not settings.GEMINI_API_KEY:
+        raise ModelProviderUnavailableError(
+            "GEMINI_API_KEY is not configured for Gemini provider. "
+            "Set GEMINI_API_KEY in environment or start Ollama with LLM_PROVIDER=ollama.",
+            status_code=503,
+        )
 
-    # 4. Auto resolution: DEMO_MODE defaults to Mock unless explicit provider specified
-    if settings.DEMO_MODE:
-        return MockVLMAdapter()
-
-    # 5. Production live mode with Gemini key
-    if settings.GEMINI_API_KEY:
-        return GeminiVLMAdapter()
-
-    # 6. Auto-probe: if local Ollama daemon is running, use it
-    probe_ollama = OllamaVLMAdapter(
-        base_url=settings.OLLAMA_BASE_URL,
-        model=settings.OLLAMA_MODEL,
-        timeout=settings.OLLAMA_TIMEOUT_SECONDS,
-    )
-    if probe_ollama.is_service_available():
-        return probe_ollama
-
-    # 7. Safe fallback for cloud production: use MockVLMAdapter rather than failing with 503
+    # 3. Explicit Mock or safe fallback when no live AI provider is running
     return MockVLMAdapter()
 
 
