@@ -336,7 +336,10 @@ class Orchestrator:
 
         # ── VLM synthesis ─────────────────────────────────────────────────────
         try:
-            from models.vlm import get_vlm_bridge
+            try:
+                from models.vlm import get_vlm_bridge
+            except (ImportError, AttributeError):
+                from backend.models.vlm import get_vlm_bridge
             bridge = get_vlm_bridge()
             answer = bridge.synthesize_answer(
                 query=query,

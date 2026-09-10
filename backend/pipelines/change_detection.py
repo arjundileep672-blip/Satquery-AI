@@ -121,7 +121,10 @@ def run_change_detection(
         image2_aligned = cv2.resize(image2_aligned, (w1, h1), interpolation=cv2.INTER_LINEAR)
 
     # ── Step 2: Change Detection ──────────────────────────────────────────────
-    from models.changeformer import detect_changes
+    try:
+        from models.changeformer import detect_changes
+    except (ImportError, AttributeError):
+        from backend.models.changeformer import detect_changes
     cd_result = detect_changes(image1, image2_aligned, threshold=change_threshold)
     change_mask: np.ndarray = cd_result["change_mask"]
     model_name: str = cd_result["model"]

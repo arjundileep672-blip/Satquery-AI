@@ -140,7 +140,10 @@ def run_semantic_change_pipeline(
 
     # ── Step 2: ChangeFormer ──────────────────────────────────────────────────
     logger.info("Step 2/5: Change detection (ChangeFormer)")
-    from models.changeformer import detect_changes
+    try:
+        from models.changeformer import detect_changes
+    except (ImportError, AttributeError):
+        from backend.models.changeformer import detect_changes
     cd = detect_changes(image1, image2_aligned)
     t_cd = time.perf_counter()
 
